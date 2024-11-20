@@ -2,6 +2,12 @@ package com.example.student_enrollment.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import com.example.student_enrollment.models.CourseAssignment;
+import com.example.student_enrollment.services.CourseAssignmentService;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.student_enrollment.models.CourseAssignment;
 import com.example.student_enrollment.services.CourseAssignmentService;
@@ -27,8 +33,14 @@ public class CourseAssignmentController {
     }
 
     @PostMapping
-    public CourseAssignment createCourseAssignment(@RequestBody CourseAssignment assignment) {
-        return courseAssignmentService.createCourseAssignment(assignment);
+    public ResponseEntity<?> createCourseAssignment(@RequestBody CourseAssignment assignment) {
+        // Add date validation
+        if (assignment.getEndDate().isBefore(assignment.getStartDate())) {
+            return ResponseEntity.badRequest()
+                .body("End date cannot be before start date");
+        }
+        
+        return ResponseEntity.ok(courseAssignmentService.createCourseAssignment(assignment));
     }
 
     @PutMapping("/{id}")
